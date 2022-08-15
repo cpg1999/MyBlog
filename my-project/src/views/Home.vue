@@ -26,12 +26,56 @@
         </div>
       </li>
     </ul>
+    <div class="echart" ref="echart"></div>
   </div>
 </template>
 
 <script>
 export default {
   name: "MyHome",
+  data() {
+    return {
+      isshow: false,
+      option: {},
+      datas: [],
+    };
+  },
+  methods: {
+    async getData() {
+      let result = await this.$API.reqGetData();
+      if (result.code == 1) {
+        this.option = result.data.option;
+        this.datas = result.data.dt;
+      }
+      this.initChart();
+    },
+    initChart() {
+      let MyChart = this.$echarts.init(this.$refs.echart);
+      console.log(this.datas);
+      MyChart.setOption({
+        title: this.option.title,
+        xAxis: {
+          type: "category",
+          axisLabel: {
+            interval: 0,
+            rotate: 45,
+          },
+        },
+        yAxis: {},
+        series: [
+          {
+            type: "bar",
+          },
+        ],
+        dataset: {
+          source: this.datas,
+        },
+      });
+    },
+  },
+  mounted() {
+    this.getData();
+  },
 };
 </script>
 
@@ -65,5 +109,10 @@ export default {
   margin-right: 20px;
   font-size: 14px;
   color: #9eabb3;
+}
+.echart {
+  width: 100%;
+  height: 500px;
+  background-color: pink;
 }
 </style>
