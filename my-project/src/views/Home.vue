@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import province from "@/json/data.json";
 export default {
   name: "MyHome",
   data() {
@@ -50,27 +51,49 @@ export default {
       this.initChart();
     },
     initChart() {
+      this.$echarts.registerMap("china", province);
       let MyChart = this.$echarts.init(this.$refs.echart);
-      console.log(this.datas);
-      MyChart.setOption({
-        title: this.option.title,
-        xAxis: {
-          type: "category",
-          axisLabel: {
-            interval: 0,
-            rotate: 45,
+      let localOptions = {
+        title: "123",
+        geo: {
+          type: "map",
+          map: "china", //chinaMap需要和registerMap中的第一个参数保持一致
+          emphasis: {
+            label: {
+              show: true, //展示标签
+              formatter: function (params) {
+                // console.log(params)
+                return params.name;
+              },
+            },
           },
+          zoom: 1.2, //设置初始化的缩放比例
         },
-        yAxis: {},
         series: [
           {
-            type: "bar",
+            data: this.datas,
+            geoIndex: 0,
+            type: "map",
           },
         ],
-        dataset: {
-          source: this.datas,
+        tooltip: {
+          formatter: function (params) {
+            return params.data.name + ":" + params.data.value;
+          },
         },
-      });
+        visualMap: {
+          pieces: [
+            { min: 9001 }, // 不指定 max，表示 max 为无限大（Infinity）。
+            { min: 7001, max: 9000 },
+            { min: 5001, max: 7000 },
+            { min: 3001, max: 5000 },
+            { min: 1001, max: 3000 },
+            { max: 1000 }, // 不指定 min，表示 min 为无限大（-Infinity）。
+          ],
+        },
+      };
+      let finalOption = { ...localOptions, ...this.option };
+      MyChart.setOption(finalOption);
     },
   },
   mounted() {
