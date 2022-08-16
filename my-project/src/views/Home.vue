@@ -27,6 +27,7 @@
       </li>
     </ul>
     <div class="echart" ref="echart"></div>
+    <div class="echart2" ref="echart2"></div>
   </div>
 </template>
 
@@ -36,24 +37,27 @@ export default {
   name: "MyHome",
   data() {
     return {
-      isshow: false,
-      option: {},
-      datas: [],
+      show1: true,
+      show2: false,
+      option1: {},
+      datas1: [],
+      option2: {},
+      datas2: [],
     };
   },
   methods: {
-    async getData() {
-      let result = await this.$API.reqGetData();
+    async getEchart1() {
+      let result = await this.$API.reqGetEchart1();
       if (result.code == 1) {
-        this.option = result.data.option;
-        this.datas = result.data.dt;
+        this.option1 = result.data.option;
+        this.datas1 = result.data.dt;
       }
-      this.initChart();
+      this.initChart1();
     },
-    initChart() {
+    initChart1() {
       this.$echarts.registerMap("china", province);
       let MyChart = this.$echarts.init(this.$refs.echart);
-      let localOptions = {
+      let localOptions1 = {
         title: "123",
         geo: {
           type: "map",
@@ -71,7 +75,7 @@ export default {
         },
         series: [
           {
-            data: this.datas,
+            data: this.datas1,
             geoIndex: 0,
             type: "map",
           },
@@ -90,14 +94,82 @@ export default {
             { min: 1001, max: 3000 },
             { max: 1000 }, // 不指定 min，表示 min 为无限大（-Infinity）。
           ],
+          textStyle: {
+            color: "#fff",
+          },
         },
       };
-      let finalOption = { ...localOptions, ...this.option };
-      MyChart.setOption(finalOption);
+      let finalOption1 = { ...localOptions1, ...this.option1 };
+      MyChart.setOption(finalOption1);
+    },
+    async getEchart2() {
+      let result = await this.$API.reqGetEchart2();
+      console.log(result);
+      if (result.code == 1) {
+        this.option2 = result.data.option;
+        this.datas2 = result.data.dt;
+      }
+      this.initChart2();
+    },
+    initChart2() {
+      this.$echarts.registerMap("china2", province);
+      let MyChart2 = this.$echarts.init(this.$refs.echart2);
+      let localOptions2 = {
+        title: {
+          show: true,
+          text: "全国飞信信息",
+          subtext: "2022",
+          textStyle: {
+            color: "#fff",
+          },
+          left: "center",
+        },
+        geo: {
+          type: "map",
+          map: "china2",
+          zoom: 1.2,
+          emphasis: {
+            label: {
+              show: true,
+              formatter: function (params) {
+                return params.name;
+              },
+            },
+          },
+        },
+        tooltip: {
+          show: true,
+          formatter: function (params) {
+            return params.data.name + ":" + params.data.value;
+          },
+        },
+        visualMap: {
+          type: "continuous",
+          min: 4000000,
+          max: 10000000,
+          hoverlink: true,
+          inRange: {
+            color: ["white", "red"],
+          },
+          textStyle: {
+            color: "#fff",
+          },
+        },
+        series: [
+          {
+            type: "map",
+            geoIndex: 0,
+            data: this.datas2,
+          },
+        ],
+      };
+      let finalOption2 = { ...localOptions2, ...this.option2 };
+      MyChart2.setOption(finalOption2);
     },
   },
   mounted() {
-    this.getData();
+    this.getEchart1();
+    this.getEchart2();
   },
 };
 </script>
@@ -134,6 +206,11 @@ export default {
   color: #9eabb3;
 }
 .echart {
+  width: 100%;
+  height: 500px;
+  background-color: pink;
+}
+.echart2 {
   width: 100%;
   height: 500px;
   background-color: pink;

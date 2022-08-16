@@ -18,9 +18,16 @@ requests.interceptors.response.use(
   }
 );
 
-export const reqGetData = () => {
+export const reqGetEchart1 = () => {
   return requests({
     url: "4085ccde7dcbbbd93a2cae1ce8913d10/echarts/chinaMap/demo1",
+    method: "post",
+  });
+};
+
+export const reqGetEchart2 = () => {
+  return requests({
+    url: "4085ccde7dcbbbd93a2cae1ce8913d10/echarts/chinaMap/demo2",
     method: "post",
   });
 };
